@@ -1,20 +1,24 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { FC, createContext, useContext, ReactNode } from 'react';
+import api from '@/lib/api';
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
-    },
-  },
-});
-
-export function ApiProvider({ children }: { children: ReactNode }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+interface ApiContextType {
+  api: typeof api;
 }
+
+const ApiContext = createContext<ApiContextType>({ api });
+
+export const useApi = () => useContext(ApiContext);
+
+interface ApiProviderProps {
+  children: ReactNode;
+}
+
+const ApiProvider: FC<ApiProviderProps> = ({ children }) => {
+  return (
+    <ApiContext.Provider value={{ api }}>
+      {children}
+    </ApiContext.Provider>
+  );
+};
+
+export default ApiProvider;

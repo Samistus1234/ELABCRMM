@@ -1,27 +1,21 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useTheme } from '../hooks/useTheme';
+import { FC, ReactNode } from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
 
-interface ThemeContextType {
-  theme: 'light' | 'dark';
-  toggleTheme: () => void;
+interface ThemeProviderProps {
+  children: ReactNode;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-export function ThemeProvider({ children }: { children: ReactNode }) {
-  const themeValue = useTheme();
-
+const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   return (
-    <ThemeContext.Provider value={themeValue}>
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
       {children}
-    </ThemeContext.Provider>
+    </NextThemesProvider>
   );
-}
+};
 
-export function useThemeContext() {
-  const context = useContext(ThemeContext);
-  if (context === undefined) {
-    throw new Error('useThemeContext must be used within a ThemeProvider');
-  }
-  return context;
-}
+export default ThemeProvider;
