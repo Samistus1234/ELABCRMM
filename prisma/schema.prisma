@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id                    String          @id @default(uuid())
+  name                  String
+  email                 String
+  phone                 String
+  passportNumber       String
+  dateOfBirth          DateTime
+  dataflowCaseNumber   String?
+  applicationDate      DateTime
+  expectedCompletionDate DateTime
+  qualification        Qualification    @relation(fields: [qualificationId], references: [id])
+  qualificationId      String
+  packageType         String
+  status              String           @default("active")
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  paymentStatus       String           @default("pending")
+  paymentAmount       Float
+  applications        Application[]
+  communications      Communication[]
+  documents           Document[]
+}
+
+model Qualification {
+  id             String    @id @default(uuid())
+  type           String
+  specialization String?
+  yearCompleted  String?
+  clients        Client[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Application {
+  id          String      @id @default(uuid())
+  client      Client      @relation(fields: [clientId], references: [id])
+  clientId    String
+  type        String
+  status      String      @default("pending")
+  documents   Document[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Document {
+  id            String       @id @default(uuid())
+  name          String
+  type          String
+  url           String
+  status        String       @default("pending")
+  client        Client       @relation(fields: [clientId], references: [id])
+  clientId      String
+  application   Application? @relation(fields: [applicationId], references: [id])
+  applicationId String?
+  uploadedAt    DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Communication {
+  id           String   @id @default(uuid())
+  client       Client   @relation(fields: [clientId], references: [id])
+  clientId     String
+  type         String
+  content      String
+  status       String   @default("sent")
+  sentAt       DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Workflow {
+  id          String         @id @default(uuid())
+  name        String
+  description String
+  steps       WorkflowStep[]
+  status      String         @default("active")
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model WorkflowStep {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  duration    Int
+  workflow    Workflow @relation(fields: [workflowId], references: [id])
+  workflowId  String
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
