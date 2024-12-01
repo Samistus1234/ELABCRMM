@@ -1,9 +1,18 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { Play, Pause, Settings, Plus, ArrowRight } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { WorkflowForm } from '../forms/WorkflowForm';
 
-const mockWorkflows = [
+interface Workflow {
+  id: string;
+  name: string;
+  description: string;
+  status: 'active' | 'paused';
+  steps: number;
+  completedSteps: number;
+}
+
+const mockWorkflows: Workflow[] = [
   {
     id: '1',
     name: 'DataFlow Application Process',
@@ -30,7 +39,7 @@ const mockWorkflows = [
   }
 ];
 
-export function WorkflowList() {
+const WorkflowList: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSubmit = async (data: any) => {
@@ -123,4 +132,6 @@ export function WorkflowList() {
       </Modal>
     </div>
   );
-}
+};
+
+export default WorkflowList;
